@@ -55,19 +55,20 @@ export default function CustomerIdForm() {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="max-w-md mx-auto mt-12 bg-white p-8 rounded-2xl shadow-xl space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="customerId">Customer ID</Label>
+        <Label htmlFor="customerId" className={'text-lg font-semibold text-gray-700'}>Customer ID</Label>
         <Input
           id="customerId"
+          type={"tel"}
           value={customerId}
           onChange={(e) => setCustomerId(e.target.value)}
           placeholder="Enter customer ID"
-          className="w-full"
+          className="w-full h-12 text-lg px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <Button type="submit" className="w-full" disabled={isSubmitting}>
+      <Button type="submit" className="w-full h-12 text-lg rounded-xl bg-black transition-colors duration-200" disabled={isSubmitting}>
         {isSubmitting ? "Verifying..." : "Verify Customer"}
       </Button>
     </form>

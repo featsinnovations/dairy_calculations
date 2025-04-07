@@ -9,38 +9,39 @@ import { Card, CardContent } from "@/components/ui/card";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
 import api from "@/lib/basicapi";
+import { Minus, Plus } from "lucide-react";
 
 const productList = [
-  { id: 8, key: "amul_gold", label: "Amul Gold", image: "/amul-gold.png" },
-  { id: 9, key: "amul_taza", label: "Amul Taza", image: "/amul-tazza.png" },
+  { id: 8, key: "amul_gold", label: "Amul Gold (500 ml)", image: "/amul-gold.png" },
+  { id: 9, key: "amul_taza", label: "Amul Taza (500 ml)", image: "/amul-tazza.png" },
   {
     id: 10,
     key: "amul_slim",
-    label: "Amul Slim & Trim",
+    label: "Amul Slim & Trim (500 ml)",
     image: "/amul-t-special.png",
   },
   {
     id: 11,
     key: "amul_buffalo",
-    label: "Amul Buffalo Milk",
+    label: "Amul Buffalo Milk (500 ml)",
     image: "/amul-buffalo.png",
   },
   {
     id: 12,
     key: "amul_shakti",
-    label: "Amul Shakti",
+    label: "Amul Shakti (500 ml)",
     image: "/amul-shakti.jpg",
   },
   {
     id: 13,
     key: "amul_masti",
-    label: "Amul Masti Buttermilk",
+    label: "Amul Masti Buttermilk (500 ml)",
     image: "/butter-milk.png",
   },
   {
     id: 14,
     key: "mother_dairy_buttermilk",
-    label: "Mother Dairy Buttermilk",
+    label: "Mother Dairy Buttermilk (500 ml)",
     image: "/butter-milk.png",
   },
 ];
@@ -48,7 +49,7 @@ const productList = [
 // This is an implementation with all products listed statically with images
 
 export default function StaticOrderForm() {
-    const router = useRouter();
+  const router = useRouter();
   const params = useParams();
   const customerId = params.id;
   const [name, setName] = useState();
@@ -66,17 +67,16 @@ export default function StaticOrderForm() {
 
   useEffect(() => {
     const featchinfo = async () => {
-        try {
-            const res = await api.get(`/api/customers/${customerId}/`);
-            setName(res.data.name);
-            // setTotalAmount(res.data.total_amount);
-
-        } catch (error) {
-            console.log(error)
-        }
-    }
+      try {
+        const res = await api.get(`/api/customers/${customerId}/`);
+        setName(res.data.name);
+        // setTotalAmount(res.data.total_amount);
+      } catch (error) {
+        console.log(error);
+      }
+    };
     featchinfo();
-  },[])
+  }, []);
 
   const handleQuantityChange = (product, value) => {
     const quantity = Number.parseInt(value) || 0;
@@ -129,22 +129,20 @@ export default function StaticOrderForm() {
 
     try {
       const response = await api.post("/api/orders/", payload);
-      if (response.status === 201) { 
+      if (response.status === 201) {
         Swal.fire({
-        title: "Success!",
-        text: "Order has been submitted",
-        icon: "success",
-        confirmButtonColor: "#3085d6",
-      }).then(() => {
-        // Redirect to the order details page
-        router.push(`/`);
-      });
+          title: "Success!",
+          text: "Order has been submitted",
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+        }).then(() => {
+          // Redirect to the order details page
+          router.push(`/`);
+        });
       }
 
-     
-
       // Reset form
-      
+
       setProducts({
         amul_gold: 0,
         amul_taza: 0,
@@ -172,7 +170,6 @@ export default function StaticOrderForm() {
       <div className="space-y-2">
         <Label htmlFor="customerId">Customer ID : {customerId}</Label>
         <p className="text-2xl font-medium">{name}</p>
-        
       </div>
 
       <div className="space-y-4">
@@ -206,6 +203,32 @@ export default function StaticOrderForm() {
                       className="w-full"
                       placeholder="0"
                     />
+                  </div>
+                  <div className="flex items-center gap-1 mt-5">
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        handleQuantityChange(
+                          product.key,
+                          (products[product.key] || 0) + 1
+                        )
+                      }
+                    >
+                      <Plus />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-1 mt-5">
+                    <Button
+                      type="button"
+                      onClick={() =>
+                        handleQuantityChange(
+                          product.key,
+                          Math.max((products[product.key] || 0) - 1, 0)
+                        )
+                      }
+                    >
+                      <Minus />
+                    </Button>
                   </div>
                 </div>
               ))}
