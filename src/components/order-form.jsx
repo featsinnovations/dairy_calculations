@@ -68,8 +68,9 @@ export default function StaticOrderForm() {
   useEffect(() => {
     const featchinfo = async () => {
       try {
-        const res = await api.get(`/api/customers/${customerId}/`);
+        const res = await api.get(`/api/customers/verify/${customerId}/`);
         setName(res.data.name);
+        setTotalAmount(res.data.total_amount);
         // setTotalAmount(res.data.total_amount);
       } catch (error) {
         console.log(error);
@@ -123,7 +124,7 @@ export default function StaticOrderForm() {
     }
 
     const payload = {
-      customer_id: customerId,
+      id: customerId,
       items: orderItems,
     };
 
@@ -170,6 +171,9 @@ export default function StaticOrderForm() {
       <div className="space-y-2">
         <Label htmlFor="customerId">Customer ID : {customerId}</Label>
         <p className="text-2xl font-medium">{name}</p>
+        <p className="text-sm font-medium text-green-600">
+                   Monthly Total: ₹{totalAmount.toFixed(2)}
+                  </p>
       </div>
 
       <div className="space-y-4">
