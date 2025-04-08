@@ -103,12 +103,15 @@ export function Detaillist() {
                 <div className="flex flex-row gap-2 md:flex-row md:items-center md:justify-between">
                   <div>
                     <CardTitle className="text-lg">
-                      ORD-{order.order_id}
+                    {order.date
+                        ? format(new Date(order.date), "MMMM d, yyyy ")
+                        : "Invalid date"}
                     </CardTitle>
                     <CardDescription>
-                      {order.date
-                        ? format(new Date(order.date), "MMMM d, yyyy h:mm a")
-                        : "Invalid date"}
+                        {order.date
+                        ? format(new Date(order.date), " h:mm a")
+                        : "Invalid date"}<br />
+                      ORD-{order.order_id}
                     </CardDescription>
                   </div>
                   <div className="flex items-center gap-4 ml-5 sm:ml-0">
