@@ -23,12 +23,14 @@ export function Detaillist() {
   const customerId = params.id;
   const [orderData, setOrderData] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [monthOffset, setMonthOffset] = useState(0);
+  const today = new Date();
+  const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1); // Months are 0-indexed
+  const [selectedYear, setSelectedYear] = useState(today.getFullYear());
 
   useEffect(() => {
     const orderhistory = async () => {
       const response = await api.get(
-        `/api/customer/${customerId}/orders/?month_offset=${monthOffset}`
+        `/api/customer/${customerId}/orders/?month=${selectedMonth}&year=${selectedYear}`
       );
       if (response.status === 200) {
         setOrderData(response.data);
@@ -42,17 +44,24 @@ export function Detaillist() {
       }
     };
     orderhistory();
-  }, [monthOffset]);
+  }, [selectedYear, selectedMonth, customerId]);
 
-  const handlePrevious = () => {
-    setMonthOffset((prev) => prev - 1);
-  };
-
-  const handleNext = () => {
-    if (monthOffset < 0) {
-      setMonthOffset((prev) => prev + 1);
-    }
-  };
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - 2 + i);
 
   console.log(orderData);
 
@@ -104,25 +113,30 @@ export function Detaillist() {
       <div className="space-y-4">
         {orderData?.orders?.length === 0 ? (
           <>
-            <div className="flex justify-center items-center gap-4 my-6">
-              <button
-                onClick={handlePrevious}
-                className="px-6 py-2 border border-black text-black bg-white hover:bg-black hover:text-white transition rounded-xl"
+            <div className="flex justify-center gap-4 mb-4">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                className="px-4 py-2 border rounded"
               >
-                Previous
-              </button>
+                {months.map((month, index) => (
+                  <option key={index + 1} value={index + 1}>
+                    {month}
+                  </option>
+                ))}
+              </select>
 
-              <button
-                onClick={handleNext}
-                disabled={monthOffset >= 0}
-                className={`px-6 py-2 border text-black bg-white rounded-xl transition ${
-                  monthOffset >= 0
-                    ? "border-gray-300 text-gray-400 cursor-not-allowed"
-                    : "border-black hover:bg-black hover:text-white"
-                }`}
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="px-4 py-2 border rounded"
               >
-                Next
-              </button>
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
             </div>
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-10">
@@ -134,31 +148,36 @@ export function Detaillist() {
           </>
         ) : (
           <>
-            <div className="flex justify-center items-center gap-4 my-6">
-              <button
-                onClick={handlePrevious}
-                className="px-6 py-2 border border-black text-black bg-white hover:bg-black hover:text-white transition rounded-xl"
+            <div className="flex justify-center gap-4 mb-4">
+              <select
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                className="px-4 py-2 border rounded"
               >
-                Previous
-              </button>
+                {months.map((month, index) => (
+                  <option key={index + 1} value={index + 1}>
+                    {month}
+                  </option>
+                ))}
+              </select>
 
-              <button
-                onClick={handleNext}
-                disabled={monthOffset >= 0}
-                className={`px-6 py-2 border text-black bg-white rounded-xl transition ${
-                  monthOffset >= 0
-                    ? "border-gray-300 text-gray-400 cursor-not-allowed"
-                    : "border-black hover:bg-black hover:text-white"
-                }`}
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(Number(e.target.value))}
+                className="px-4 py-2 border rounded"
               >
-                Next
-              </button>
+                {years.map((year) => (
+                  <option key={year} value={year}>
+                    {year}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className=" flex justify-end px-3">
-              {orderData?.total_amount_for_month && (
+              {orderData?.total_amount && (
                 <div className="text-center text-xl font-semibold text-green-700 my-2">
                   Total for {orderData.month}: ₹
-                  {orderData.total_amount_for_month.toFixed(2)}
+                  {orderData.total_amount.toFixed(2)}
                 </div>
               )}
             </div>
