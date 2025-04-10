@@ -18,6 +18,37 @@ import { useParams } from "next/navigation";
 import Swal from "sweetalert2";
 import { AnimatePresence, motion } from "framer-motion";
 
+function parseDateString(dateStr) {
+  if (!dateStr) return null;
+
+  try {
+    // Parse format: "2025-04-08 04:59:11 PM"
+    const [datePart, timePart] = dateStr.split(" ");
+    const [year, month, day] = datePart.split("-");
+    const [time, period] = timePart.split(" ");
+    const [hours, minutes, seconds] = time.split(":");
+
+    let hour24 = parseInt(hours, 10);
+    if (period === "PM" && hour24 < 12) hour24 += 12;
+    if (period === "AM" && hour24 === 12) hour24 = 0;
+
+    // Create date in local timezone
+    const date = new Date(
+      parseInt(year, 10),
+      parseInt(month, 10) - 1, // months are 0-indexed
+      parseInt(day, 10),
+      hour24,
+      parseInt(minutes, 10),
+      parseInt(seconds, 10)
+    );
+
+    return isNaN(date.getTime()) ? null : date;
+  } catch (e) {
+    console.error("Date parsing error:", e);
+    return null;
+  }
+}
+
 export function Detaillist() {
   const params = useParams();
   const customerId = params.id;
@@ -28,6 +59,16 @@ export function Detaillist() {
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
 
   useEffect(() => {
+    if (!customerId) {
+      Swal.fire({
+        title: "Error",
+        text: "Customer ID not found",
+        icon: "error",
+        confirmButtonColor: "#3085d6",
+      });
+      return;
+    }
+
     const orderhistory = async () => {
       const response = await api.get(
         `/api/customer/${customerId}/orders/?month=${selectedMonth}&year=${selectedYear}`
@@ -103,7 +144,7 @@ export function Detaillist() {
       label:
         found?.label ||
         key.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase()),
-      image: found?.image || "/placeholder.svg",
+      image: found?.image || "/amul-gold.png",
     };
   };
 
@@ -119,7 +160,7 @@ export function Detaillist() {
                 onChange={(e) => setSelectedMonth(Number(e.target.value))}
                 className="px-4 py-2 border rounded"
               >
-                {months.map((month, index) => (
+                {months?.map((month, index) => (
                   <option key={index + 1} value={index + 1}>
                     {month}
                   </option>
@@ -131,7 +172,7 @@ export function Detaillist() {
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
                 className="px-4 py-2 border rounded"
               >
-                {years.map((year) => (
+                {years?.map((year) => (
                   <option key={year} value={year}>
                     {year}
                   </option>
@@ -154,7 +195,7 @@ export function Detaillist() {
                 onChange={(e) => setSelectedMonth(Number(e.target.value))}
                 className="px-4 py-2 border rounded"
               >
-                {months.map((month, index) => (
+                {months?.map((month, index) => (
                   <option key={index + 1} value={index + 1}>
                     {month}
                   </option>
@@ -166,7 +207,7 @@ export function Detaillist() {
                 onChange={(e) => setSelectedYear(Number(e.target.value))}
                 className="px-4 py-2 border rounded"
               >
-                {years.map((year) => (
+                {years?.map((year) => (
                   <option key={year} value={year}>
                     {year}
                   </option>
@@ -176,7 +217,7 @@ export function Detaillist() {
             <div className=" flex justify-end px-3">
               {orderData?.total_amount && (
                 <div className="text-center text-xl font-semibold text-green-700 my-2">
-                  Total for {orderData.month}: ₹
+                  Total for {months[selectedMonth - 1]} {selectedYear}: ₹
                   {orderData.total_amount.toFixed(2)}
                 </div>
               )}
@@ -187,25 +228,27 @@ export function Detaillist() {
                   <div className="flex flex-row gap-2 md:flex-row md:items-center md:justify-between">
                     <div>
                       <CardTitle className="text-lg">
-                        {order.date
-                          ? format(new Date(order.date), "MMMM d, yyyy ")
-                          : "Invalid date"}
+                        {format(
+                          parseDateString(order?.date) || new Date(),
+                          "MMMM d, yyyy"
+                        )}
                       </CardTitle>
                       <CardDescription>
-                        {order.date
-                          ? format(new Date(order.date), " h:mm a")
-                          : "Invalid date"}
+                        {format(
+                          parseDateString(order?.date) || new Date(),
+                          "h:mm a"
+                        )}
                         <br />
-                        ORD-{order.order_id}
+                        ORD-{order?.order_id}
                       </CardDescription>
                     </div>
                     <div className="flex items-center gap-4 ml-5 sm:ml-0">
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleOrderClick(order.order_id)}
+                        onClick={() => handleOrderClick(order?.order_id)}
                       >
-                        {selectedOrder === order.order_id
+                        {selectedOrder === order?.order_id
                           ? "Hide details"
                           : "View details"}
                       </Button>
@@ -219,7 +262,7 @@ export function Detaillist() {
                   </div>
                 </CardHeader>
                 <AnimatePresence initial={false}>
-                  {selectedOrder === order.order_id && (
+                  {selectedOrder === order?.order_id && (
                     <>
                       <motion.div
                         key="details"
@@ -234,7 +277,7 @@ export function Detaillist() {
                             <div>
                               <h3 className="font-medium mb-2">Items</h3>
                               <div className="space-y-3">
-                                {order.items.map((item, index) => {
+                                {order?.items?.map((item, index) => {
                                   const { label, image } = getProductDetails(
                                     item.product
                                   );
@@ -250,7 +293,7 @@ export function Detaillist() {
                                           className="h-full w-full object-cover"
                                           onError={(e) =>
                                             (e.currentTarget.src =
-                                              "/placeholder.svg")
+                                              "/amul-gold.png")
                                           }
                                         />
                                       </div>
