@@ -223,3 +223,8 @@
 .react-select-container .react-select__single-value {
   @apply text-foreground;
 }
+
+body {
+  font-family: Arial, sans-serif;
+
+}
