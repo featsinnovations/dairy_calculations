@@ -187,7 +187,7 @@ export default function CustomerIdForm() {
         {/* Original Customer ID Form */}
         <form
           onSubmit={handleSubmit}
-          className="max-w-md mx-auto mt-12 bg-white p-8 rounded-2xl shadow-xl space-y-6"
+          className="max-w-md mx-auto mt-12 bg-gray-100 p-8 rounded-2xl shadow-xl space-y-6"
         >
           <div className="space-y-2">
             <Label
@@ -222,10 +222,10 @@ export default function CustomerIdForm() {
             {isSubmitting ? "Verifying..." : "Customer Detail"}
           </Button>
         </form>
-        <div className=" space-y-6 overflow-hidden">
+        {/* <div className=" space-y-6 overflow-hidden">
           <h1 className="text-2xl font-semibold">Monthly Payment Status</h1>
 
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-row  gap-4">
             <div className="">
               <Label htmlFor="month" className={'mb-1'}>Select Month</Label>
               <Select value={month} onValueChange={setMonth}>
@@ -298,7 +298,7 @@ export default function CustomerIdForm() {
               </TableBody>
             </Table>
           </div>
-        </div>
+        </div> */}
 
         {/* Customer List Section */}
         {/* <div className="mt-12 bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
