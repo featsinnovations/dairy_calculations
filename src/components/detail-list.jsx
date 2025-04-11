@@ -17,6 +17,15 @@ import api from "@/lib/basicapi";
 import { useParams } from "next/navigation";
 import Swal from "sweetalert2";
 import { AnimatePresence, motion } from "framer-motion";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 function parseDateString(dateStr) {
   if (!dateStr) return null;
@@ -57,6 +66,8 @@ export function Detaillist() {
   const today = new Date();
   const [selectedMonth, setSelectedMonth] = useState(today.getMonth() + 1); // Months are 0-indexed
   const [selectedYear, setSelectedYear] = useState(today.getFullYear());
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [isMonthPaid, setIsMonthPaid] = useState(false);
 
   useEffect(() => {
     if (!customerId) {
@@ -75,6 +86,7 @@ export function Detaillist() {
       );
       if (response.status === 200) {
         setOrderData(response.data);
+        setIsMonthPaid(response.data.is_month_paid);
       } else {
         Swal.fire({
           title: "Error",
@@ -148,6 +160,21 @@ export function Detaillist() {
     };
   };
 
+  const handelpaid = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await api.post(
+        `/api/customer/${customerId}/mark-paid/?month=${selectedMonth}&year=${selectedYear}`
+      );
+      if (res.status === 200) {
+        Swal.fire("Success", "Orders marked as paid", "success");
+        setShowConfirmDialog(false);
+      }
+    } catch (error) {
+      Swal.fire("Error", "Failed to update status", "error");
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Orders list */}
@@ -189,6 +216,16 @@ export function Detaillist() {
           </>
         ) : (
           <>
+            <div className="flex item-center justify-center px-3 mb-4">
+              <Button
+                onClick={() => setShowConfirmDialog(true)}
+                className="bg-green-600 text-white hover:bg-green-700 font-bold"
+                disabled={isMonthPaid}
+                variant="outline"
+              >
+                {isMonthPaid ? "Already Paid" : "Mark Month as Paid"}
+              </Button>
+            </div>
             <div className="flex justify-center gap-4 mb-4">
               <select
                 value={selectedMonth}
@@ -343,6 +380,40 @@ export function Detaillist() {
           </>
         )}
       </div>
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        {/* <DialogTrigger asChild>
+    <Button
+      variant="outline"
+      onClick={() => setShowConfirmDialog(true)}
+      className="bg-green-600 text-white hover:bg-green-700"
+    >
+      Paid
+    </Button>
+  </DialogTrigger> */}
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Payment</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to mark orders for{" "}
+              <strong>
+                {months[selectedMonth - 1]} {selectedYear}
+              </strong>{" "}
+              as paid?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setShowConfirmDialog(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-green-600 text-white hover:bg-green-700"
+              onClick={handelpaid}
+            >
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -7,8 +7,40 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/basicapi";
 import { useRouter } from "next/navigation";
-import { Loader2, Search } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectItem,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableHeader,
+  TableRow,
+  TableHead,
+  TableBody,
+  TableCell,
+} from "@/components/ui/table";
+import Link from "next/link";
+
+const months = [
+  { label: "January", value: "1" },
+  { label: "February", value: "2" },
+  { label: "March", value: "3" },
+  { label: "April", value: "4" },
+  { label: "May", value: "5" },
+  { label: "June", value: "6" },
+  { label: "July", value: "7" },
+  { label: "August", value: "8" },
+  { label: "September", value: "9" },
+  { label: "October", value: "10" },
+  { label: "November", value: "11" },
+  { label: "December", value: "12" },
+];
+
+const years = [2023, 2024, 2025];
 
 export default function CustomerIdForm() {
   const [customerId, setCustomerId] = useState("");
@@ -17,6 +49,20 @@ export default function CustomerIdForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
+  const today = new Date();
+  const [month, setMonth] = useState(today.getMonth() + 1);
+  const [year, setYear] = useState(today.getFullYear());
+
+  useEffect(() => {
+    async function fetchData() {
+      const res = await api.get(
+        `/api/payment-summary/?month=${month}&year=${year}`
+      );
+      console.log(res);
+      setCustomers(res.data);
+    }
+    fetchData();
+  }, [month, year]);
 
   // Fetch customers on component mount
   // useEffect(() => {
@@ -136,48 +182,126 @@ export default function CustomerIdForm() {
     : [];
 
   return (
-    <div className="max-w-4xl mx-auto px-4">
-      {/* Original Customer ID Form */}
-      <form
-        onSubmit={handleSubmit}
-        className="max-w-md mx-auto mt-12 bg-white p-8 rounded-2xl shadow-xl space-y-6"
-      >
-        <div className="space-y-2">
-          <Label
-            htmlFor="customerId"
-            className="text-lg font-semibold text-gray-700"
-          >
-            Customer ID
-          </Label>
-          <Input
-            id="customerId"
-            type="tel"
-            value={customerId}
-            onChange={(e) => setCustomerId(e.target.value)}
-            placeholder="Enter customer ID"
-            className="w-full h-12 text-lg px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-        
-        <Button
-          type="submit"
-          className="w-full h-12 text-lg rounded-xl bg-black transition-colors duration-200"
-          disabled={isSubmitting}
+    <>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-10">
+        {/* Original Customer ID Form */}
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-md mx-auto mt-12 bg-white p-8 rounded-2xl shadow-xl space-y-6"
         >
-          {isSubmitting ? "Verifying..." : "Verify Customer"}
-        </Button>
-        <Button
-          type="button"
-          className="w-full h-12 text-lg rounded-xl bg-black transition-colors duration-200"
-          onClick={handledetail}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Verifying..." : "Customer Detail"}
-        </Button>
-      </form>
+          <div className="space-y-2">
+            <Label
+              htmlFor="customerId"
+              className="text-lg font-semibold text-gray-700"
+            >
+              Customer ID
+            </Label>
+            <Input
+              id="customerId"
+              type="tel"
+              value={customerId}
+              onChange={(e) => setCustomerId(e.target.value)}
+              placeholder="Enter customer ID"
+              className="w-full h-12 text-lg px-4 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
 
-      {/* Customer List Section */}
-      {/* <div className="mt-12 bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
+          <Button
+            type="submit"
+            className="w-full h-12 text-lg rounded-xl bg-black transition-colors duration-200"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Verifying..." : "Verify Customer"}
+          </Button>
+          <Button
+            type="button"
+            className="w-full h-12 text-lg rounded-xl bg-black transition-colors duration-200"
+            onClick={handledetail}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Verifying..." : "Customer Detail"}
+          </Button>
+        </form>
+        <div className=" space-y-6 overflow-hidden">
+          <h1 className="text-2xl font-semibold">Monthly Payment Status</h1>
+
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="">
+              <Label htmlFor="month" className={'mb-1'}>Select Month</Label>
+              <Select value={month} onValueChange={setMonth}>
+                <SelectTrigger className="w-[150px]" id="month">
+                  <SelectValue placeholder="Select month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((m) => (
+                    <SelectItem key={m.value} value={m.value}>
+                      {m.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="">
+              <Label htmlFor="year" className={'mb-1'}>Select Year</Label>
+
+              <Select value={year} onValueChange={setYear}>
+                <SelectTrigger className="w-[120px]" id="year">
+                  <SelectValue placeholder="Select year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((y) => (
+                    <SelectItem key={y} value={y.toString()}>
+                      {y}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="w-full overflow-x-auto rounded-md border">
+            <Table>
+              <TableHeader className={"sticky top-0 bg-white z-10"}>
+                <TableRow>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Due </TableHead>
+                  <TableHead>Paid </TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {customers?.map((customer) => (
+                 
+                  <TableRow key={customer.customer_id}>
+                    
+                    <TableCell><Link href={`/detail/${customer.customer_id}`}>{customer.customer_name}</Link></TableCell>
+                    <TableCell className={"text-red-600"}>
+                      <Link href={`/detail/${customer.customer_id}`}> ₹ {customer.due_amount}</Link>
+                    </TableCell>
+                    <TableCell className={"text-green-700"}>
+                    <Link href={`/detail/${customer.customer_id}`}> ₹ {customer.paid_amount}</Link>
+                    </TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-block text-xs sm:text-sm font-medium px-2.5 py-0.5 rounded 
+                       ${
+                         customer.due_amount === 0
+                           ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300"
+                           : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300"
+                       }`}
+                      >
+                        <Link href={`/detail/${customer.customer_id}`}>{customer.due_amount === 0 ? "Paid" : "Due"}</Link>
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+
+        {/* Customer List Section */}
+        {/* <div className="mt-12 bg-white p-6 sm:p-8 rounded-2xl shadow-xl">
         <h2 className="text-2xl font-bold text-gray-800 mb-6 text-center">
           Customer List
         </h2>
@@ -228,6 +352,7 @@ export default function CustomerIdForm() {
           </div>
         )}
       </div> */}
-    </div>
+      </div>
+    </>
   );
 }

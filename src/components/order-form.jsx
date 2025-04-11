@@ -80,9 +80,10 @@ export default function StaticOrderForm() {
   useEffect(() => {
     const featchinfo = async () => {
       try {
-        const res = await api.get(`/api/customers/verify/${customerId}/`);
-        setName(res.data.name);
-        setTotalAmount(res.data.total_amount);
+        const res = await api.get(`/api/customers/${customerId}/total-due/`);
+        console.log(res);
+        setName(res.data.customer_name);
+        setTotalAmount(res.data.total_due);
         // setTotalAmount(res.data.total_amount);
         const productRes = await api.get("/api/products/");
         setAvailableProducts(productRes.data);
@@ -181,111 +182,123 @@ export default function StaticOrderForm() {
   };
 
   return (
-  <><div className=" ">
-  <h1 className="bg-gradient-to-b from-yellow-400 to-white text-xl p-7 w-full  font-bold text-gray-800">Milk Order Tracker</h1>
-  
-      <Card className="w-full rounded-t-none border-t-0">
-      <CardContent className=" space-y-4">
-        <Label htmlFor="customerId">Customer ID : {customerId}</Label>
-        <p className="text-2xl font-medium">{name}</p>
-        <p className="text-sm font-medium text-green-600">
-          Monthly Total: ₹{totalAmount.toFixed(2)}
-        </p>
-        </CardContent>
+    <>
+      <div className=" ">
+        <h1 className="bg-gradient-to-b from-yellow-400 to-white text-xl p-7 w-full  font-bold text-gray-800">
+          Milk Order Tracker
+        </h1>
+
+        <Card className="w-full rounded-t-none border-t-0">
+          <CardContent className=" space-y-4">
+            <Label htmlFor="customerId">Customer ID : {customerId}</Label>
+            <p className="text-2xl font-medium">{name}</p>
+            <p className="text-sm font-medium text-green-600">
+              Overall due: ₹{totalAmount.toFixed(2)}
+            </p>
+          </CardContent>
         </Card>
       </div>
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-6 px-4 mt-3  flex flex-col h-[100dvh]"
-    >
-      
+      <form
+        onSubmit={handleSubmit}
+        className="space-y-6 px-4 mt-3  flex flex-col h-[100dvh]"
+      >
+        <div className="space-y-4">
+          <h2 className="text-lg font-medium">Milk Products</h2>
 
-      <div className="space-y-4">
-        <h2 className="text-lg font-medium">Milk Products</h2>
+          <div className="grid grid-cols-2 gap-4">
+            {availableProducts.map((product) => (
+              <div
+                key={product.id}
+                className="flex flex-col items-center gap-3"
+              >
+                <Card className={"w-full"}>
+                  <CardContent className="p-4 space-y-4">
+                    <div className="w-30 h-30 shrink-0">
+                      <Image
+                        src={product.image_path}
+                        alt={product.nickname}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <Label htmlFor={product.name} className="block">
+                        {product.nickname}
+                      </Label>
+                      <div className="flex flex-row justify-between">
+                        <Label
+                          htmlFor={product.name}
+                          className="block text-gray-500 mt-1"
+                        >
+                          ₹{product.price}
+                        </Label>
+                        <span className="bg-gray-200 text-gray-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded-sm dark:bg-gray-700 dark:text-gray-300">
+                          {product?.quentity}
+                        </span>
+                      </div>
+                      <div className="mt-7">
+                        <p className="text-sm text-gray-700">
+                          Quantity: {products[product.name] || 0}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex flex-row justify-center">
+                      <div className="flex items-center mr-3 ">
+                        <Button
+                          // style={{ backgroundColor: '#155e63'}}
+                          // className={"bg-red-500"}
+                          type="button"
+                          onClick={() =>
+                            handleQuantityChange(
+                              product.name,
+                              (products[product.name] || 0) + 1
+                            )
+                          }
+                        >
+                          <Plus strokeWidth={4} />
+                        </Button>
+                      </div>
+                      <div className="flex items-center">
+                        <Button
+                          // style={{ backgroundColor: '#155e63'}}
+                          // className={"bg-red-500"}
+                          type="button"
+                          onClick={() =>
+                            handleQuantityChange(
+                              product.name,
+                              Math.max((products[product.name] || 0) - 1, 0)
+                            )
+                          }
+                        >
+                          <Minus strokeWidth={4} />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            ))}
+          </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          {availableProducts.map((product) => (
-            <div key={product.id} className="flex flex-col items-center gap-3">
-              <Card className={"w-full"}>
-                <CardContent className="p-4 space-y-4">
-                  <div className="w-30 h-30 shrink-0">
-                    <Image
-                      src={product.image_path}
-                      alt={product.nickname}
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 space-y-2">
-                    <Label htmlFor={product.name} className="block">
-                      {product.nickname}
-                    </Label>
-                    <div className="flex flex-row justify-between">
-                    <Label
-                      htmlFor={product.name}
-                      className="block text-gray-500 mt-2"
-                    >
-                      ₹{product.price}
-                    </Label><kbd className="px-2 py-1.5 text-xs font-semibold text-gray-800 bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-600 dark:text-gray-100 dark:border-gray-500">{product?.quentity}</kbd></div>
-                    <div className="mt-7">
-                    <p className="text-sm font-medium">
-                      Quantity: {products[product.name] || 0}
-                    </p>
-                    
-</div>
-                  </div>
-                  <div className="flex flex-row justify-center">
-                    <div className="flex items-center mr-3 ">
-                      <Button
-                        // style={{ backgroundColor: '#155e63'}}
-                        // className={"bg-red-500"}
-                        type="button"
-                        onClick={() =>
-                          handleQuantityChange(
-                            product.name,
-                            (products[product.name] || 0) + 1
-                          )
-                        }
-                      >
-                        <Plus strokeWidth={4}/>
-                      </Button>
-                    </div>
-                    <div className="flex items-center">
-                      <Button
-                        // style={{ backgroundColor: '#155e63'}}
-                        // className={"bg-red-500"}
-                        type="button"
-                        onClick={() =>
-                          handleQuantityChange(
-                            product.name,
-                            Math.max((products[product.name] || 0) - 1, 0)
-                          )
-                        }
-                      >
-                        <Minus strokeWidth={4} />
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          ))}
+          <div className="sticky bottom-0 bg-transparent z-20  p-4">
+            <Button
+              type="submit"
+              className="w-full font-bold text-xl "
+              // style={{ backgroundColor: '#155e63'}}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Record Order"}
+            </Button>
+          </div>
+          <div className="-mx-4 px-4 w-screen sm:w-full bg-gray-200 text-center min-h-[200px] flex justify-center items-center-safe z-30">
+            <p className="text-3xl font-black text-gray-400">
+              From Farm to Family , Fresh Milk Daily{" "}
+              <span className="text-red-500 text-3xl">&hearts;</span>
+            </p>
+          </div>
         </div>
-        
-      <div className="sticky bottom-0 bg-transparent z-20  p-4">
-        <Button
-          type="submit"
-          className="w-full font-bold text-xl "
-          // style={{ backgroundColor: '#155e63'}}
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting..." : "Record Order"}
-        </Button>
-      </div><div className="-mx-4 px-4 w-screen sm:w-full bg-gray-200 text-center min-h-[200px] flex justify-center items-center-safe z-30">
-          <p className="text-3xl font-black text-gray-400">From Farm to Family , Fresh Milk Daily <span className="text-red-500 text-3xl">&hearts;</span></p>
-        </div>
-      </div>
-    </form></>
+      </form>
+    </>
   );
 }
