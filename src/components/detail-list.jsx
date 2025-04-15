@@ -26,25 +26,27 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { toZonedTime  } from 'date-fns-tz';
+
 
 function parseDateString(dateStr) {
   if (!dateStr) return null;
 
   try {
-    // Parse format: "2025-04-08 04:59:11 PM"
-    const [datePart, timePart] = dateStr.split(" ");
+    const parts = dateStr.split(" ");
+    if (parts.length !== 3) return null;
+
+    const [datePart, timePart, period] = parts;
     const [year, month, day] = datePart.split("-");
-    const [time, period] = timePart.split(" ");
-    const [hours, minutes, seconds] = time.split(":");
+    const [hours, minutes, seconds] = timePart.split(":");
 
     let hour24 = parseInt(hours, 10);
     if (period === "PM" && hour24 < 12) hour24 += 12;
     if (period === "AM" && hour24 === 12) hour24 = 0;
 
-    // Create date in local timezone
     const date = new Date(
       parseInt(year, 10),
-      parseInt(month, 10) - 1, // months are 0-indexed
+      parseInt(month, 10) - 1,
       parseInt(day, 10),
       hour24,
       parseInt(minutes, 10),
@@ -175,6 +177,21 @@ export function Detaillist() {
     }
   };
 
+  const displayDate = (dateString) => {
+    // Parse assuming the string is in IST
+    const parsed = parseDateString(dateString);
+    
+    // Convert to India timezone (though it's already in IST)
+    
+    
+    return {
+      date: format(parsed, 'MMMM d, yyyy'),
+      time: format(parsed, 'h:mm a')
+    };
+  };
+
+
+
   return (
     <div className="min-h-screen bg-gray-100">
       <div className="space-y-6">
@@ -265,20 +282,19 @@ export function Detaillist() {
                   <CardHeader className="p-4 md:p-6">
                     <div className="flex flex-row gap-2 md:flex-row md:items-center md:justify-between">
                       <div>
-                        <CardTitle className="text-lg">
-                          {format(
-                            parseDateString(order?.date) || new Date(),
-                            "MMMM d, yyyy"
-                          )}
-                        </CardTitle>
-                        <CardDescription>
-                          {format(
-                            parseDateString(order?.date) || new Date(),
-                            "h:mm a"
-                          )}
-                          <br />
-                          ORD-{order?.order_id}
-                        </CardDescription>
+                        {(() => {
+                          const { date, time } = displayDate(order?.date);
+                          return (
+                            <>
+                              <CardTitle className="text-lg">{date}</CardTitle>
+                              <CardDescription>
+                                {time}
+                                <br />
+                                ORD-{order?.order_id}
+                              </CardDescription>
+                            </>
+                          );
+                        })()}
                       </div>
                       <div className="flex items-center gap-4 ml-5 sm:ml-0">
                         <Button
