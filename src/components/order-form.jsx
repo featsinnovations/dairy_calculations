@@ -183,7 +183,7 @@ export default function StaticOrderForm() {
 
   return (
     <>
-      <div className=" ">
+      <div className="">
         <h1 className="bg-gradient-to-b from-yellow-400 to-white text-xl p-7 w-full  font-bold text-gray-800">
           Milk Order Tracker
         </h1>
@@ -191,7 +191,7 @@ export default function StaticOrderForm() {
         <Card className="w-full rounded-t-none border-t-0">
           <CardContent className=" space-y-4">
             <Label htmlFor="customerId">Customer ID : {customerId}</Label>
-            <p className="text-2xl font-medium">{name}</p>
+            <p className="text-2xl font-bold">{name}</p>
             <p className="text-sm font-medium text-green-600">
               Overall due: ₹{totalAmount.toFixed(2)}
             </p>
@@ -281,7 +281,7 @@ export default function StaticOrderForm() {
             ))}
           </div>
 
-          <div className="sticky bottom-0 bg-transparent z-20  p-4">
+          <div className="sticky bottom-13 bg-transparent  z-20  p-4">
             <Button
               type="submit"
               className="w-full font-bold text-xl "

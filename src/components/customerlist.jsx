@@ -97,7 +97,9 @@ const today = new Date();
             <Table>
               <TableHeader className={"sticky top-0 bg-white z-10"}>
                 <TableRow>
+                  <TableHead>ID</TableHead>
                   <TableHead>Name</TableHead>
+                  
                   <TableHead>Due </TableHead>
                   <TableHead>Paid </TableHead>
                   <TableHead>Status</TableHead>
@@ -107,8 +109,9 @@ const today = new Date();
                 {customers?.map((customer) => (
                  
                   <TableRow key={customer.customer_id}>
-                    
+                    <TableCell><Link href={`/detail/${customer.customer_id}`}>{customer.customer_id}</Link></TableCell>
                     <TableCell><Link href={`/detail/${customer.customer_id}`}>{customer.customer_name}</Link></TableCell>
+                    
                     <TableCell className={"text-red-600"}>
                       <Link href={`/detail/${customer.customer_id}`}> ₹ {customer.due_amount}</Link>
                     </TableCell>

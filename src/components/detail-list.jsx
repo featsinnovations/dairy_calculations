@@ -176,212 +176,213 @@ export function Detaillist() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Orders list */}
-      <div className="space-y-4">
-        {orderData?.orders?.length === 0 ? (
-          <>
-            <div className="flex justify-center gap-4 mb-4">
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                className="px-4 py-2 border rounded"
-              >
-                {months?.map((month, index) => (
-                  <option key={index + 1} value={index + 1}>
-                    {month}
-                  </option>
-                ))}
-              </select>
+    <div className="min-h-screen bg-gray-100">
+      <div className="space-y-6">
+        {/* Orders list */}
+        <div className="space-y-4">
+          {orderData?.orders?.length === 0 ? (
+            <>
+              <div className="flex justify-center gap-4 mb-4">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                  className="px-4 py-2 border rounded"
+                >
+                  {months?.map((month, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
 
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="px-4 py-2 border rounded"
-              >
-                {years?.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <Card>
-              <CardContent className="flex flex-col items-center justify-center py-10">
-                <p className="text-muted-foreground font-bold text-2xl mb-2">
-                  No orders found
-                </p>
-              </CardContent>
-            </Card>
-          </>
-        ) : (
-          <>
-            <div className="flex item-center justify-center px-3 mb-4">
-              <Button
-                onClick={() => setShowConfirmDialog(true)}
-                className="bg-green-600 text-white hover:bg-green-700 font-bold"
-                disabled={isMonthPaid}
-                variant="outline"
-              >
-                {isMonthPaid ? "Already Paid" : "Mark Month as Paid"}
-              </Button>
-            </div>
-            <div className="flex justify-center gap-4 mb-4">
-              <select
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(Number(e.target.value))}
-                className="px-4 py-2 border rounded"
-              >
-                {months?.map((month, index) => (
-                  <option key={index + 1} value={index + 1}>
-                    {month}
-                  </option>
-                ))}
-              </select>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  className="px-4 py-2 border rounded"
+                >
+                  {years?.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-10">
+                  <p className="text-muted-foreground font-bold text-2xl mb-2">
+                    No orders found
+                  </p>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <>
+              <div className="flex item-center justify-center px-3 mb-4">
+                <Button
+                  onClick={() => setShowConfirmDialog(true)}
+                  className="bg-green-600 text-white hover:bg-green-700 font-bold"
+                  disabled={isMonthPaid}
+                  variant="outline"
+                >
+                  {isMonthPaid ? "Already Paid" : "Mark Month as Paid"}
+                </Button>
+              </div>
+              <div className="flex justify-center gap-4 mb-4">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(Number(e.target.value))}
+                  className="px-4 py-2 border rounded"
+                >
+                  {months?.map((month, index) => (
+                    <option key={index + 1} value={index + 1}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
 
-              <select
-                value={selectedYear}
-                onChange={(e) => setSelectedYear(Number(e.target.value))}
-                className="px-4 py-2 border rounded"
-              >
-                {years?.map((year) => (
-                  <option key={year} value={year}>
-                    {year}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className=" flex justify-end px-3">
-              {orderData?.total_amount && (
-                <div className="text-center text-xl font-semibold text-green-700 my-2">
-                  Total for {months[selectedMonth - 1]} {selectedYear}: ₹
-                  {orderData.total_amount.toFixed(2)}
-                </div>
-              )}
-            </div>
-            {orderData?.orders?.map((order) => (
-              <Card key={order.order_id}>
-                <CardHeader className="p-4 md:p-6">
-                  <div className="flex flex-row gap-2 md:flex-row md:items-center md:justify-between">
-                    <div>
-                      <CardTitle className="text-lg">
-                        {format(
-                          parseDateString(order?.date) || new Date(),
-                          "MMMM d, yyyy"
-                        )}
-                      </CardTitle>
-                      <CardDescription>
-                        {format(
-                          parseDateString(order?.date) || new Date(),
-                          "h:mm a"
-                        )}
-                        <br />
-                        ORD-{order?.order_id}
-                      </CardDescription>
-                    </div>
-                    <div className="flex items-center gap-4 ml-5 sm:ml-0">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleOrderClick(order?.order_id)}
-                      >
-                        {selectedOrder === order?.order_id
-                          ? "Hide details"
-                          : "View details"}
-                      </Button>
-                      <span className="font-medium">
-                        &#8377;
-                        {order?.total_amount
-                          ? order.total_amount.toFixed(2)
-                          : "0.00"}
-                      </span>
-                    </div>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  className="px-4 py-2 border rounded"
+                >
+                  {years?.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className=" flex justify-end px-3">
+                {orderData?.total_amount && (
+                  <div className="text-center text-xl font-semibold text-green-700 my-2">
+                    Total for {months[selectedMonth - 1]} {selectedYear}: ₹
+                    {orderData.total_amount.toFixed(2)}
                   </div>
-                </CardHeader>
-                <AnimatePresence initial={false}>
-                  {selectedOrder === order?.order_id && (
-                    <>
-                      <motion.div
-                        key="details"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: "auto" }}
-                        exit={{ opacity: 0, height: 0 }}
-                        transition={{ duration: 0.3 }}
-                      >
-                        <Separator />
-                        <CardContent className="p-4 md:p-6">
-                          <div className="space-y-6">
-                            <div>
-                              <h3 className="font-medium mb-2">Items</h3>
-                              <div className="space-y-3">
-                                {order?.items?.map((item, index) => {
-                                  const { label, image } = getProductDetails(
-                                    item.product
-                                  );
-                                  return (
-                                    <div
-                                      key={`${item.product}-${index}`}
-                                      className="flex items-center gap-4"
-                                    >
-                                      <div className="h-16 w-16 overflow-hidden rounded-md border">
-                                        <img
-                                          src={image}
-                                          alt={label}
-                                          className="h-full w-full object-cover"
-                                          onError={(e) =>
-                                            (e.currentTarget.src =
-                                              "/amul-gold.png")
-                                          }
-                                        />
-                                      </div>
-                                      <div className="flex-1">
-                                        <p className="font-medium">{label}</p>
-                                        <p className="text-sm text-muted-foreground">
-                                          Qty: {item.quantity} × &#8377;
-                                          {item?.price
-                                            ? item.price.toFixed(2)
+                )}
+              </div>
+              {orderData?.orders?.map((order) => (
+                <Card key={order.order_id}>
+                  <CardHeader className="p-4 md:p-6">
+                    <div className="flex flex-row gap-2 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <CardTitle className="text-lg">
+                          {format(
+                            parseDateString(order?.date) || new Date(),
+                            "MMMM d, yyyy"
+                          )}
+                        </CardTitle>
+                        <CardDescription>
+                          {format(
+                            parseDateString(order?.date) || new Date(),
+                            "h:mm a"
+                          )}
+                          <br />
+                          ORD-{order?.order_id}
+                        </CardDescription>
+                      </div>
+                      <div className="flex items-center gap-4 ml-5 sm:ml-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleOrderClick(order?.order_id)}
+                        >
+                          {selectedOrder === order?.order_id
+                            ? "Hide details"
+                            : "View details"}
+                        </Button>
+                        <span className="font-medium">
+                          &#8377;
+                          {order?.total_amount
+                            ? order.total_amount.toFixed(2)
+                            : "0.00"}
+                        </span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <AnimatePresence initial={false}>
+                    {selectedOrder === order?.order_id && (
+                      <>
+                        <motion.div
+                          key="details"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <Separator />
+                          <CardContent className="p-4 md:p-6">
+                            <div className="space-y-6">
+                              <div>
+                                <h3 className="font-medium mb-2">Items</h3>
+                                <div className="space-y-3">
+                                  {order?.items?.map((item, index) => {
+                                    const { label, image } = getProductDetails(
+                                      item.product
+                                    );
+                                    return (
+                                      <div
+                                        key={`${item.product}-${index}`}
+                                        className="flex items-center gap-4"
+                                      >
+                                        <div className="h-16 w-16 overflow-hidden rounded-md border">
+                                          <img
+                                            src={image}
+                                            alt={label}
+                                            className="h-full w-full object-cover"
+                                            onError={(e) =>
+                                              (e.currentTarget.src =
+                                                "/amul-gold.png")
+                                            }
+                                          />
+                                        </div>
+                                        <div className="flex-1">
+                                          <p className="font-medium">{label}</p>
+                                          <p className="text-sm text-muted-foreground">
+                                            Qty: {item.quantity} × &#8377;
+                                            {item?.price
+                                              ? item.price.toFixed(2)
+                                              : "0.00"}
+                                          </p>
+                                        </div>
+                                        <div className="font-medium">
+                                          &#8377;
+                                          {item?.quantity && item?.price
+                                            ? (
+                                                item.quantity * item.price
+                                              ).toFixed(2)
                                             : "0.00"}
-                                        </p>
+                                        </div>
                                       </div>
-                                      <div className="font-medium">
-                                        &#8377;
-                                        {item?.quantity && item?.price
-                                          ? (
-                                              item.quantity * item.price
-                                            ).toFixed(2)
-                                          : "0.00"}
-                                      </div>
-                                    </div>
-                                  );
-                                })}
+                                    );
+                                  })}
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </CardContent>
-                        <CardFooter className="flex justify-between p-4 md:p-6 bg-muted/50">
-                          <div>
-                            <p className="text-sm text-muted-foreground">
-                              Order Total
-                            </p>
-                            <p className="text-lg font-bold">
-                              &#8377;
-                              {order?.total_amount
-                                ? order.total_amount.toFixed(2)
-                                : "0.00"}
-                            </p>
-                          </div>
-                        </CardFooter>
-                      </motion.div>
-                    </>
-                  )}
-                </AnimatePresence>
-              </Card>
-            ))}
-          </>
-        )}
-      </div>
-      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        {/* <DialogTrigger asChild>
+                          </CardContent>
+                          <CardFooter className="flex justify-between p-4 md:p-6 bg-muted/50">
+                            <div>
+                              <p className="text-sm text-muted-foreground">
+                                Order Total
+                              </p>
+                              <p className="text-lg font-bold">
+                                &#8377;
+                                {order?.total_amount
+                                  ? order.total_amount.toFixed(2)
+                                  : "0.00"}
+                              </p>
+                            </div>
+                          </CardFooter>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </Card>
+              ))}
+            </>
+          )}
+        </div>
+        <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+          {/* <DialogTrigger asChild>
     <Button
       variant="outline"
       onClick={() => setShowConfirmDialog(true)}
@@ -390,30 +391,34 @@ export function Detaillist() {
       Paid
     </Button>
   </DialogTrigger> */}
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Payment</DialogTitle>
-            <DialogDescription>
-              Are you sure you want to mark orders for{" "}
-              <strong>
-                {months[selectedMonth - 1]} {selectedYear}
-              </strong>{" "}
-              as paid?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="ghost" onClick={() => setShowConfirmDialog(false)}>
-              Cancel
-            </Button>
-            <Button
-              className="bg-green-600 text-white hover:bg-green-700"
-              onClick={handelpaid}
-            >
-              Confirm
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Confirm Payment</DialogTitle>
+              <DialogDescription>
+                Are you sure you want to mark orders for{" "}
+                <strong>
+                  {months[selectedMonth - 1]} {selectedYear}
+                </strong>{" "}
+                as paid?
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button
+                variant="ghost"
+                onClick={() => setShowConfirmDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="bg-green-600 text-white hover:bg-green-700"
+                onClick={handelpaid}
+              >
+                Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }
